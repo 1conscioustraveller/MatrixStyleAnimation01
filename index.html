@@ -5,13 +5,8 @@
   <title>Nocturn Labs V2</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Other head elements, links, etc. -->
-
   <style>
     /* --- Background Animation Styles Start --- */
-    /* Paste the CSS from ReactComponentVanillaConversion002 here */
-    /* e.g., styling for canvas, positioning, animation-specific classes, etc. */
-    /* Example placeholder: */
     body, html {
       margin: 0;
       padding: 0;
@@ -26,29 +21,20 @@
       height: 100%;
       z-index: -1;
     }
-    /* Any other CSS used by the animation (font, colors, etc.). */
     /* --- Background Animation Styles End --- */
   </style>
 </head>
 <body>
   <!-- --- Background Animation Element Start --- -->
-  <!-- Paste the canvas (or DOM element) required for animation -->
   <canvas id="backgroundCanvas"></canvas>
   <!-- --- Background Animation Element End --- -->
 
-  <!-- Rest of NocturnLabsV2 contents -->
   <div id="app">
     <!-- existing site content -->
   </div>
 
-  <!-- Scripts -->
-  <!-- Possibly import other scripts needed by site -->
-
   <!-- --- Background Animation Script Start --- -->
   <script>
-    // Paste the JavaScript from ReactComponentVanillaConversion002 here verbatim.
-    // For example (pseudo-code), animation init, canvas context, loop, resize handlers.
-
     (function() {
       const canvas = document.getElementById('backgroundCanvas');
       const ctx = canvas.getContext('2d');
@@ -60,7 +46,6 @@
       window.addEventListener('resize', resizeCanvas);
       resizeCanvas();
 
-      // Animation state (e.g. drops, font, columns etc.)
       const fontSize = 16;
       const columns = Math.floor(canvas.width / fontSize);
       const drops = [];
@@ -68,16 +53,30 @@
         drops[x] = 1;
       }
 
+      /* --- Added: color oscillation state --- */
+      let colorPhase = 0;
+      let colorDirection = 1; // 1 = forward, -1 = backward
+
       function draw() {
-        // Example of animation loop content:
         ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = '#0F0'; // green text
+        /* --- Added: oscillating between blue (#0000FF) and purple (#8000FF) --- */
+        colorPhase += 0.01 * colorDirection;
+        if (colorPhase >= 1) { colorPhase = 1; colorDirection = -1; }
+        if (colorPhase <= 0) { colorPhase = 0; colorDirection = 1; }
+
+        // interpolate: blue (0,0,255) → purple (128,0,255)
+        const r = Math.round(0 + (128 - 0) * colorPhase);
+        const g = 0;
+        const b = 255; // stays constant
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        /* --- End of color interpolation --- */
+
         ctx.font = fontSize + 'px monospace';
 
         for (let i = 0; i < drops.length; i++) {
-          const text = String.fromCharCode( (Math.random() * 128) );
+          const text = String.fromCharCode(33 + Math.random() * 94);
           ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
           if (drops[i] * fontSize > canvas.height || Math.random() > 0.975) {
